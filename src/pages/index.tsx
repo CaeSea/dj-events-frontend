@@ -4,8 +4,9 @@ import EventItem from "@/components/EventItem";
 import { API_URL } from '@/config/index';
 
 export async function getStaticProps() {
-  const res = await fetch(`${API_URL}/api/events`);
-  const events = await res.json();
+  const res = await fetch(`${API_URL}/api/events?[populate]=*&_sort=date:ASC&_limit=3`);
+  const json = await res.json();
+  const events = await json.data;
 
   return {
     props: { events },
@@ -14,6 +15,8 @@ export async function getStaticProps() {
 }
 
 export default function HomePage({ events }: any) {
+
+  console.log(events);
   return (
     <Layout>
       <h1>Upcoming events</h1>

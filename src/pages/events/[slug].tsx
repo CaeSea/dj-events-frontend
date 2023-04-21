@@ -7,9 +7,10 @@ import styles from '@/styles/Event.module.css';
 
 export async function getStaticPaths() {
     const res = await fetch(`${API_URL}/api/events`);
-    const events = await res.json()
+    const json = await res.json();
+    const events = await json.data;
     const paths = events.map((evt: any) => ({
-        params: { slug: evt.slug }
+        params: { slug: evt.attributes.slug }
     }));
     return {
         paths,
@@ -18,10 +19,11 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params: { slug } }: any) {
-    const res = await fetch(`${API_URL}/api/events/${slug}`);
-    const events = await res.json();
+    const res = await fetch(`${API_URL}/api/events?filters[slug][$eq]=${slug}&populate=*`);
+    const json = await res.json();
+    const events = await json.data;
     return {
-        props: { evt: events[0] },
+        props: { evt: events[0].attributes },
         revalidate: 1
     }
 }
@@ -40,6 +42,8 @@ export default function EventPage({ evt }: any) {
         console.log('delete');
     }
 
+    const src = evt.image.data.attributes.formats.medium.url;
+
     return (
         <Layout>
             <div className={styles.event}>
@@ -55,13 +59,13 @@ export default function EventPage({ evt }: any) {
                 </div>
 
                 <span>
-                    {evt.date} ay {evt.time}
+                    {new Date(evt.date).toLocaleDateString('en-GB')} ay {evt.time}
                 </span>
 
                 <h2>{evt.name}</h2>
                 {evt.image && (
                     <div className={styles.image}>
-                        <Image src={evt.image} width={960} height={600} alt="" />
+                        <Image src={src} width={960} height={600} alt="" />
                     </div>
                 )}
 
