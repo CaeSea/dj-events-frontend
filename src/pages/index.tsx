@@ -15,8 +15,6 @@ export async function getStaticProps() {
 }
 
 export default function HomePage({ events }: any) {
-
-  console.log(events);
   return (
     <Layout>
       <h1>Upcoming events</h1>
